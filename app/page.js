@@ -1,4 +1,5 @@
 'use client'
+
 // pages/index.js
 import React, { useState, useEffect } from 'react';
 import { GlobalStyle, Container, Textarea, Button, Info } from '../components/styles';
@@ -10,18 +11,17 @@ export default function Home() {
   const [text, setText] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Load stored text from localStorage on component mount
   useEffect(() => {
     const storedText = localStorage.getItem('text');
     if (storedText) {
-      setText(storedText);
+      setText(storedText); 
     }
   }, []);
 
   const handleTextChange = (e) => {
     const newText = e.target.value;
     setText(newText);
-    localStorage.setItem('text', newText);
+    localStorage.setItem('text', newText); 
   };
 
   const copyToClipboard = () => {
@@ -46,13 +46,13 @@ export default function Home() {
         placeholder="Type here..." 
       />
       <Info>
-        Word Count: {wordCount} | Character Count: {charCount}
+        تعداد کلمه: {wordCount} | تعداد کاراکتر: {charCount}
       </Info>
       <Button onClick={copyToClipboard}>
         {copied ? (
           <FontAwesomeIcon icon={faCheck} />
         ) : (
-          "Copy Text"
+          "کپی"
         )}
       </Button>
     </Container>
