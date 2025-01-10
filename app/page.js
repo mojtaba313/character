@@ -1,8 +1,8 @@
 'use client'
 // pages/index.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GlobalStyle, Container, Textarea, Button, Info } from '../components/styles';
-import Head from 'next/head'; 
+import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
@@ -10,8 +10,18 @@ export default function Home() {
   const [text, setText] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // Load stored text from localStorage on component mount
+  useEffect(() => {
+    const storedText = localStorage.getItem('text');
+    if (storedText) {
+      setText(storedText);
+    }
+  }, []);
+
   const handleTextChange = (e) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    setText(newText);
+    localStorage.setItem('text', newText);
   };
 
   const copyToClipboard = () => {
@@ -48,4 +58,3 @@ export default function Home() {
     </Container>
   );
 }
-
