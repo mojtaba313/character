@@ -1,17 +1,16 @@
-'use client'
+'use client';
 // pages/index.js
-import React, { useState, useEffect, useCallback } from 'react';
-import { GlobalStyle, Container, Textarea, Button, Info } from '../components/styles';
+import React, { useState, useEffect } from 'react';
+import { GlobalStyle, Container, Textarea, Button, Info, ToggleContainer, ToggleLabel, ToggleInput } from '../components/styles';
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import _ from 'lodash';
 
 export default function Home() {
   const [text, setText] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isRTL, setIsRTL] = useState(false);
 
-  // بارگذاری متن ذخیره شده از localStorage هنگام بارگذاری کامپوننت
   useEffect(() => {
     const storedText = localStorage.getItem('text');
     if (storedText) {
@@ -19,22 +18,31 @@ export default function Home() {
     }
   }, []);
 
-  // استفاده از استفاده از ورودی آهنگ با استفاده از lodash
-  const handleTextChange = useCallback(_.throttle((e) => {
+  const handleTextChange = (e) => {
     const newText = e.target.value;
     setText(newText);
     localStorage.setItem('text', newText);
-  }, 300), []);
+  };
 
-  // کپی کردن متن به کلیپ بورد
+  const handlePaste = (e) => {
+    e.preventDefault();
+    let pastedText = (e.clipboardData || window.clipboardData).getData('text');
+    pastedText = pastedText.replace(/\s+/g, ' ').trim();
+    setText(text + pastedText);
+    localStorage.setItem('text', text + pastedText);
+  };
+
+  const handleToggleChange = () => {
+    setIsRTL((prevIsRTL) => !prevIsRTL);
+  };
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // بازنشانی آیکون بعد از ۲ ثانیه
+      setTimeout(() => setCopied(false), 2000);
     });
   };
 
-  // محاسبه تعداد کلمات و کاراکترهای متن
   const wordCount = text.trim().split(/\s+/).length;
   const charCount = text.length;
 
@@ -44,10 +52,18 @@ export default function Home() {
         <title>شمارنده کلمات و کاراکترهای تکست اریا</title>
       </Head>
       <GlobalStyle />
-      <Textarea 
-        value={text} 
-        onChange={handleTextChange} 
-        placeholder="اینجا تایپ کنید..." 
+      <ToggleContainer>
+        <ToggleLabel>
+          راست‌چین
+          <ToggleInput type="checkbox" checked={isRTL} onChange={handleToggleChange} />
+        </ToggleLabel>
+      </ToggleContainer>
+      <Textarea
+        value={text}
+        onChange={handleTextChange}
+        onPaste={handlePaste}
+        placeholder="اینجا تایپ کنید..."
+        dir={isRTL ? 'rtl' : 'ltr'}
       />
       <Info>
         تعداد کلمات: {wordCount} | تعداد کاراکترها: {charCount}
